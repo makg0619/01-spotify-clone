@@ -3,6 +3,9 @@ let songIndex = 0;
 let masterPlay = document.getElementById('masterPlay');
 let myProgressBar = document.getElementById('myProgressBar');
 let songItems = document.querySelectorAll('.songItem');
+let songItemPlay = document.querySelectorAll('.songItemPlay');
+let previous = document.getElementById('previous');
+let next = document.getElementById('next');
 let gif = document.getElementById('gif');
 let songs = [
     {
@@ -37,7 +40,7 @@ let songs = [
     }
 ];
 
-
+// iterating elements
 songItems.forEach((songitem, i)=>{
   songitem.querySelector('img').src = songs[i].coverPath;
   songitem.querySelector('.songName').innerText = songs[i].songsName;
@@ -60,6 +63,7 @@ masterPlay.addEventListener('click', function(){
     }
 })
 
+// Update progress bar
 audioElement.addEventListener('timeupdate',()=>{
     progress = parseInt((audioElement.currentTime/audioElement.duration)*100);
     myProgressBar.value = progress;
@@ -68,3 +72,52 @@ audioElement.addEventListener('timeupdate',()=>{
 myProgressBar.addEventListener('change',()=>{
     audioElement.currentTime = myProgressBar.value * audioElement.duration/100;
 });  
+
+// handle previous and next button
+next.addEventListener('click', ()=>{
+    songIndex++;
+    updateSong();
+});
+
+previous.addEventListener('click', ()=>{
+    songIndex--;
+    updateSong();
+})
+
+function updateSong(){
+    songs.forEach((song, i)=>{
+        audioElement.src = songs[songIndex].filePath;
+        audioElement.play();
+    })
+}
+
+// update song for indiviual click
+songItemPlay.forEach((songElement)=>{
+    songElement.addEventListener('click', function(e){
+        audioElement.src = songs[e.currentTarget.id].filePath;
+        if(audioElement.paused || audioElement.currentTime<0) {
+            audioElement.play();
+            // masterPlay.classList.remove('fa-play-circle');
+            // masterPlay.classList.add('fa-pause-circle');
+            e.currentTarget.classList.remove('fa-play-circle');
+            e.currentTarget.classList.add('fa-pause-circle');
+            gif.style.opacity = 1;
+        }
+        if(e.currentTarget.classList.contains('fa-pause-circle')){
+            // audioElement.pause();
+            e.currentTarget.classList.remove('fa-pause-circle');
+            e.currentTarget.classList.add('fa-play-circle');
+            // gif.style.opacity = 0;
+            console.log('worked');
+        }
+        // else if (audioElement.played ) {
+            // audioElement.pause();
+            // songElement.classList.remove('fa-play-circle');
+            // songElement.classList.add('fa-pause-circle');
+            // gif.style.opacity = 0;
+        // }
+    })
+})
+
+console.log(audioElement);
+
